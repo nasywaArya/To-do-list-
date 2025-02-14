@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5"style="max-width: 400px;">
+    <div class="card shadow p-4">
+      <h1 class="text-center mb-4">Todo List</h1>
+      <div id="root"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    function TodoApp() {
+      const [activity, setActivity] = React.useState('');
+      const [lists, setLists] = React.useState([]);
+      const [editIndex, setEditIndex] = React.useState(null);
+      const [editText, setEditText] = React.useState('');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (activity.trim()) {
+          setLists([...lists, activity]);
+          setActivity('');
+        }
+      };
+
+      const handleDelete = (index) => {
+        if (window.confirm('Apakah Anda yakin ingin menghapus aktivitas ini?')) {
+          setLists(lists.filter((_, i) => i !== index));
+        }
+      };
+
+      const handleEdit = (index) => {
+        setEditIndex(index);
+        setEditText(lists[index]);
+      };
+
+      const handleSave = () => {
+        const updatedList = lists.map((item, index) => (index === editIndex ? editText : item));
+        setLists(updatedList);
+        setEditIndex(null);
+        setEditText('');
+      };
+
+      return (
+        <>
+          <form onSubmit={handleSubmit} className="input-group mb-3">
+            <input type="text" className="form-control" placeholder="Masukkan aktivitas" value={activity} onChange={(e) => setActivity(e.target.value)} />
+            <button type="submit" className="btn btn-primary ml-2">Tambah</button>
+          </form>
+          {lists.length > 0 ? (
+            <ul className="list-group">
+              {lists.map((item, index) => (
+                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                  {editIndex === index ? (
+                    <input type="text" className="form-control mr-2" value={editText} onChange={(e) => setEditText(e.target.value)} />
+                  ) : (
+                    item
+                  )}
+                  {editIndex === index ? (
+                    <button onClick={handleSave} className="btn btn-success btn-sm ml-2">Simpan</button>
+                  ) : (
+                    <>
+                      <button onClick={() => handleEdit(index)} className="btn btn-warning btn-sm mr-2">Edit</button>
+                      <button onClick={() => handleDelete(index)} className="btn btn-danger btn-sm">Hapus</button>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-muted">Belum ada aktivitas.</p>
+          )}
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<TodoApp />);
+  </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
